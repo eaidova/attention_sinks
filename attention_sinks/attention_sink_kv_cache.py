@@ -29,7 +29,7 @@ DIM_TO_SLICE = {
 def get_slice_end(key:torch.Tensor, sink_window_size, k_seq_dim, cache_size, sink_size):
     if key.shape[k_seq_dim] > cache_size:
         return key.shape[k_seq_dim] - sink_window_size
-    return sink_size
+    return torch.minimum(sink_size, torch.tensor(key.shape[k_seq_dim]))
 
 
 
@@ -55,7 +55,7 @@ class AttentionSinkKVCache:
         return tuple(
             tuple(
                 [torch.cat([
-                    self.k_slice(k, 0, self.attention_sink_size), 
+                    self.k_slice(k, 0, min(seq_len, self.attention_sink_size)), 
                     self.k_slice(k, slice_end, seq_len)
                 ], dim=self.k_seq_dim),
 
