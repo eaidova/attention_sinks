@@ -27,8 +27,7 @@ DIM_TO_SLICE = {
 
 @torch.jit.script_if_tracing
 def get_slice_end(key:torch.Tensor, sink_window_size, k_seq_dim, cache_size, sink_size):
-    if key.shape[k_seq_dim] > cache_size:
-        return key.shape[k_seq_dim] - sink_window_size
+    sink_size  = torch.maximum(key.shape[k_seq_dim] - sink_window_size, sink_size)
     return torch.minimum(sink_size, torch.tensor(key.shape[k_seq_dim]))
 
 
